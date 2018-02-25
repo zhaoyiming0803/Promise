@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Promise异步then的应用demo</title>
+</head>
+<body>
+  <script src="../src/promise.js"></script>
+  <script>
+    var p = new Promise(function (resolve, reject) {
+      var timer = setTimeout(function () {
+        resolve(1);
+        clearTimeout(timer);
+        timer = null;
+      }, 1000);
+    });
+    
+    p
+      .then(function (res) {
+        console.log(res + 1);
+      }, function (res) {
+        console.log(res);
+      })
+      .then(function (res) {
+        console.log(res + 2);
+      });
+  </script>
+</body>
+</html>
