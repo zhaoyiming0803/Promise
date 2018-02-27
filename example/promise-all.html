@@ -7,6 +7,7 @@
   <title>Promise异步all的应用demo</title>
 </head>
 <body>
+  <script src="http://www.zymseo.com/js/demo.js"></script>
   <script src="../src/promise.js"></script>
   <script>
     var p1 = new Promise(function (resolve, reject) {
@@ -17,14 +18,22 @@
 
     var p2 = new Promise(function (resolve, reject) {
       setTimeout(function () {
-        reject(2);
+        resolve(2);
       }, 2000);
     });
 
     var p3 = new Promise(function (resolve, reject) {
-      setTimeout(function () {
-        reject(3);
-      }, 3000);
+      $.ajax({
+        type: 'post',
+        url: './test.php',
+        dataType: 'json',
+        success: function (res) {
+          resolve(res);
+        },
+        error: function (res) {
+          reject(res);
+        }
+      });
     });
 
     Promise.all([p1, p2, p3]).then(function (res) {

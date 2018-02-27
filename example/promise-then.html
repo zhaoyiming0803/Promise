@@ -7,25 +7,39 @@
   <title>Promise异步then的应用demo</title>
 </head>
 <body>
+  <script src="http://www.zymseo.com/js/demo.js"></script>
   <script src="../src/promise.js"></script>
   <script>
     var p = new Promise(function (resolve, reject) {
-      var timer = setTimeout(function () {
-        resolve(1);
-        clearTimeout(timer);
-        timer = null;
-      }, 1000);
+      $.ajax({
+        type: 'post',
+        url: './test.php',
+        dataType: 'json',
+        success: function (res) {
+          resolve(res);
+        },
+        error: function (res) {
+          reject(res);
+        }
+      });
     });
     
     p
       .then(function (res) {
-        console.log(res + 1);
+        console.log(res);
       }, function (res) {
         console.log(res);
       })
-      .then(function (res) {
-        console.log(res + 2);
-      });
+    
+    setTimeout(function () {
+      p.then(function (res) {
+        setTimeout(function () {
+          console.log(res);
+        }, 3000);
+      }, function (res) {
+        console.log(res);
+      });    
+    }, 2000);
   </script>
 </body>
 </html>
