@@ -60,12 +60,14 @@
       len = promiseList.length;
     if (len === 0) {return false;}
     for (var i = 0; i < len; i += 1) {
-      promiseList[i].then(function (val) {
-        successRes.push(val);
-        if (successRes.length === len) {
-          resolve(successRes);
+      promiseList[i].then((function (i) {
+        return function (val) {
+          successRes[i] = val;
+          if (--len === 0) {
+            resolve(successRes);
+          }
         }
-      }, function (val) {
+      })(i), function (val) {
         if (errorRes.length === 0) {
           errorRes.push(val);
           reject(val);
