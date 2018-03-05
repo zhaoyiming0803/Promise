@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Promise异步race的应用demo</title>
+</head>
+<body>
+  <script src="../src/promise.js"></script>
+  <script>
+    var p1 = new Promise(function (resolve, reject) {
+      setTimeout(function () {
+        resolve(1);
+      }, 1000);
+    });
+
+    var p2 = new Promise(function (resolve, reject) {
+      setTimeout(function () {
+        resolve(2);
+        reject('超时了！');
+      }, 2000);
+    });
+
+    Promise.race([p1, p2]).then(function (res) {
+      console.log(res);
+    }, function (res) {
+      console.log(res);
+    });
+  </script>
+</body>
+</html>

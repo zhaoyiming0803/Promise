@@ -76,6 +76,17 @@
     }
   }
 
+  function racePromise (promiseList, resolve, reject) {
+    var status = 0;
+    for (var i = 0, len = promiseList.length; i < len; i += 1) {
+      promiseList[i].then(function (val) {
+        status === 0 && (status = 1) && resolve(val);
+      }, function (val) {
+        status === 0 && (status = 2) && reject(val);
+      });
+    }
+  }
+
   function Promise (fn) {
     this.handles = {
       resolves: [],
@@ -93,6 +104,19 @@
     return new Promise(function (resolve, reject) {
       var timer = setTimeout(function () {
         multiplePromise(promiseList, resolve, reject);
+        clearTimeout(timer);
+        timer = null;
+      }, 0);
+    });
+  };
+
+  Promise.race = function (promiseList) {
+    if (!isArray(promiseList)) {
+      throw Error('The param of Promise.race must be a Array!');
+    }
+    return new Promise(function (resolve, reject) {
+      var timer = setTimeout(function () {
+        racePromise(promiseList, resolve, reject);
         clearTimeout(timer);
         timer = null;
       }, 0);
