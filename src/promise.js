@@ -27,8 +27,11 @@
   function resolve (self, value) {
     var resolves = self.handles.resolves,
       len = resolves.length;
+
     self.status === 0 && (self.status = 1) && (self.value = value);
-    if (len === 0) {return false;}
+    
+    if (len === 0) return false;
+    
     for (var i = 0; i < len; i += 1) {
       resolves[i].call(self, value);
     }
@@ -37,8 +40,11 @@
   function reject (self, reason) {
     var rejects = self.handles.rejects,
       len = rejects.length;
+
     self.status === 0 && (self.status = 2) && (self.value = reason);
-    if (len === 0) {return false;}
+    
+    if (len === 0) return false;
+    
     for (var i = 0; i < len; i += 1) {
       rejects[i].call(self, reason);
     }
@@ -58,7 +64,9 @@
     var successRes = [],
       errorRes = [],
       len = promiseList.length;
-    if (len === 0) {return false;}
+    
+    if (len === 0) return false;
+    
     for (var i = 0; i < len; i += 1) {
       promiseList[i].then((function (i) {
         return function (val) {
