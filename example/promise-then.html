@@ -30,6 +30,9 @@
       }, function (res) {
         console.log(res);
       })
+      .then(function (res) {
+        console.log('res', res);
+      });
     
     setTimeout(function () {
       p.then(function (res) {
