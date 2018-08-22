@@ -28,10 +28,11 @@
     var resolves = self.handles.resolves,
       len = resolves.length;
 
-    self.status === 0 && (self.status = 1) && (self.value = value);
-    
     if (len === 0) return false;
-    
+
+    self.handles.rejects.length = 0;
+    self.status === 0 && (self.status = 1) && (self.value = value);
+
     for (var i = 0; i < len; i += 1) {
       resolves[i].call(self, value);
     }
@@ -41,9 +42,10 @@
     var rejects = self.handles.rejects,
       len = rejects.length;
 
-    self.status === 0 && (self.status = 2) && (self.value = reason);
-    
     if (len === 0) return false;
+
+    self.handles.resolves.length = 0;
+    self.status === 0 && (self.status = 2) && (self.value = reason);
     
     for (var i = 0; i < len; i += 1) {
       rejects[i].call(self, reason);
@@ -52,10 +54,8 @@
 
   function doResolve (self, fn) {
     fn(function (value) {
-      self.handles.rejects.length = 0;
       timer(self, value, resolve);
     }, function (reason) {
-      self.handles.resolves.length = 0;
       timer(self, reason, reject);
     });
   }

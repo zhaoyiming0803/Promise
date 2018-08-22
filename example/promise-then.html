@@ -16,7 +16,11 @@
         url: './test.php',
         dataType: 'json',
         success: function (res) {
+          // 同时运行resolve和reject，谁在前边就执行谁，后面的将不会执行
+          reject(res);
           resolve(res);
+          // resolve(res);
+          // reject(res);
         },
         error: function (res) {
           reject(res);
@@ -28,7 +32,7 @@
       .then(function (res) {
         console.log(res);
       }, function (res) {
-        console.log(res);
+        console.log('reject:', res);
       })
       .then(function (res) {
         console.log('res', res);
