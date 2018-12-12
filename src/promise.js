@@ -1,7 +1,7 @@
 /**
- * Description: 模拟ES6-Promise实现原理，可运行于浏览器或服务端
- * User: zhaoyiming
- * Date: 2018/02/25
+ * 模拟ES6-Promise实现原理，可运行于浏览器或服务端
+ * @author: zhaoyiming
+ * @since: 2018/02/25
  * License: MIT, https://github.com/zymfe/Promise
  */
 
