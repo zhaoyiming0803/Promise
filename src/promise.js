@@ -1,14 +1,14 @@
 /**
  * 模拟ES6-Promise实现原理，可运行于浏览器或服务端
  * @author: zhaoyiming
- * @since: 2018/02/25
+ * @since:  2018/02/25
  * License: MIT, https://github.com/zymfe/Promise
  */
 
-;(function (global, factory) {
+;(function (window, factory) {
   typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() :
   typeof define === 'function' && define.amd ? define([], function () {return factory();}) :
-  (global.Promise = factory());
+  (window.Promise = factory());
 })(this, function () {
   'use strict';
 
@@ -16,13 +16,49 @@
     return Object.prototype.toString.call(arry) === '[object Array]';
   }
 
-  function timer (self, value, fn) {
-    var timeout = setTimeout(function () {
-      fn(self, value);
-      clearTimeout(timeout);
-      timeout = null;
-    }, 0);
+  function isNative (Ctor) {
+    return typeof Ctor === 'function' && /native code/.test(Ctor.toString());
   }
+
+  function flushCallback (self, value, fn) {
+    return function () {
+      return fn(self, value);
+    }
+  }
+
+  var timer = (function () {
+    var macroTimerFunc;
+    if (typeof setImmediate !== 'undefined' && isNative(setImmediate)) {
+      macroTimerFunc = function (self, value, fn) {
+        setImmediate(flushCallback(self, value, fn));
+      }
+    } else if (
+      typeof MessageChannel !== 'undefined' && (
+        isNative(MessageChannel) ||
+        // PhantomJS
+        MessageChannel.toString() === '[object MessageChannelConstructor]'
+      )
+    ) {
+      var _self, _value, _fn;
+      var channel = new MessageChannel();
+      var port = channel.port2;
+      channel.port1.onmessage = function (e) {
+        flushCallback(_self, _value, _fn)();
+      };
+      macroTimerFunc = function (self, value, fn) {
+        _self = self;
+        _value = value;
+        _fn = fn;
+        // postMessage 参数如果是对象，只能有一个属性，所以这里使用闭包修改 self、value、fn
+        port.postMessage(1);
+      }
+    } else {
+      macroTimerFunc = function (self, value, fn) {
+        setTimeout(flushCallback(self, value, fn), 0);
+      }
+    }
+    return macroTimerFunc;
+  })();
 
   function resolve (self, value) {
     var resolves = self.handles.resolves,
