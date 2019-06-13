@@ -32,7 +32,7 @@ p.then(function (value) {
 ```
 从以上代码可以看出，Promise是一个构造函数，实例化之后，可以通过它的then方法【注册】promise异步操作成功时执行的回调，使得异步调用变得非常简单方便。
 
-之所以说是注册，是因为它就是一种【发布订阅模式】，详细参考《JavaScript发布与订阅模式详解》： http://www.zymseo.com/508.html 。
+之所以说是注册，是因为它就是一种【发布订阅模式】。
 
 ### 2、试着实现一个Promise雏形
 ``` javascript
@@ -103,7 +103,7 @@ function Promise (fn) {
 
 Promises/A+规范中的2.1 Promise States中明确规定了，pending可以转化为fulfilled或rejected并且只能转化一次，也就是说如果pending转化到fulfilled状态，那么就不能再转化到rejected。并且fulfilled和rejected状态只能由pending转化而来，两者之间不能互相转换。如图所示：
 
-![image](https://github.com/zymseo/Promise/blob/master/promise.png)
+![image](https://github.com/zymfe/Promise/blob/master/promise.png)
 ``` javascript
 function Promise (fn) {
   this.handles = {
@@ -140,11 +140,11 @@ function addQueue (self, resolve, reject) {
 
 了解了Promise执行原理，再去扩展then之后的其他方法就很好做了。例如Promise.all() Promise.rece()等等。
 
-这里 https://github.com/zymseo/Promise/blob/master/src/promise.js 实现了Promise大多数方法，可以作为参考。
+这里 https://github.com/zymfe/Promise/blob/master/src/promise.js 实现了Promise大多数方法，可以作为参考。
 
 ### 个人微信&QQ：1047832475
 
-![image](https://github.com/zymseo/VueNode/blob/master/wechat.png)
+![image](https://github.com/zymfe/VueNode/blob/master/wechat.png)
 
 ### --- 分割线 ---
 
