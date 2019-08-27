@@ -143,7 +143,7 @@
 
   Promise.all = function (promiseList) {
     if (!isArray(promiseList)) {
-      throw Error('The param of Promise.all must be a Array!');
+      throw Error('The param of Promise.all must be an Array!');
     }
     return new Promise(function (resolve, reject) {
       var timer = setTimeout(function () {
@@ -156,7 +156,7 @@
 
   Promise.race = function (promiseList) {
     if (!isArray(promiseList)) {
-      throw Error('The param of Promise.race must be a Array!');
+      throw Error('The param of Promise.race must be an Array!');
     }
     return new Promise(function (resolve, reject) {
       var timer = setTimeout(function () {
