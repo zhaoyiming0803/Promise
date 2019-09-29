@@ -13,7 +13,7 @@
     var p1 = new Promise(function (resolve, reject) {
       setTimeout(function () {
         resolve(1);
-      }, 10000);
+      }, 1000);
     });
 
     var p2 = new Promise(function (resolve, reject) {
@@ -22,21 +22,21 @@
       }, 2000);
     });
 
-    var p3 = new Promise(function (resolve, reject) {
-      $.ajax({
-        type: 'post',
-        url: './test.php',
-        dataType: 'json',
-        success: function (res) {
-          resolve(res);
-        },
-        error: function (res) {
-          reject(res);
-        }
-      });
-    });
+    // var p3 = new Promise(function (resolve, reject) {
+    //   $.ajax({
+    //     type: 'post',
+    //     url: './test.php',
+    //     dataType: 'json',
+    //     success: function (res) {
+    //       resolve(res);
+    //     },
+    //     error: function (res) {
+    //       reject(res);
+    //     }
+    //   });
+    // });
 
-    Promise.all([p1, p2, p3]).then(function (res) {
+    Promise.all([p1, p2]).then(function (res) {
       console.log(res);
     }, function (res) {
       console.log(res);

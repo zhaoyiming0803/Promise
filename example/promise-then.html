@@ -11,20 +11,24 @@
   <script src="../src/promise.js"></script>
   <script>
     var p = new Promise(function (resolve, reject) {
-      $.ajax({
-        type: 'post',
-        url: './test.php',
-        dataType: 'json',
-        success: function (res) {
-          // 同时运行resolve和reject，谁在前边就执行谁，后面的将不会执行
-          reject(res);
-          resolve(res);
-          // resolve(res);
-          // reject(res);
-        },
-        error: function (res) {
-          reject(res);
-        }
+      // $.ajax({
+      //   type: 'post',
+      //   url: './test.php',
+      //   dataType: 'json',
+      //   success: function (res) {
+      //     // 同时运行resolve和reject，谁在前边就执行谁，后面的将不会执行
+      //     reject(res);
+      //     resolve(res);
+      //     // resolve(res);
+      //     // reject(res);
+      //   },
+      //   error: function (res) {
+      //     reject(res);
+      //   }
+      // });
+
+      setTimeout(() => {
+        resolve(1);
       });
     });
     
