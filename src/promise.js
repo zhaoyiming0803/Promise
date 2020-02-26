@@ -17,7 +17,7 @@
   const isNative = Cotr => typeof Ctor === 'function' && /native code/.test(Ctor.toString())
   const isFunction = fn => typeof fn === 'function'
 
-  var timer = (function () {
+  const timer = (function () {
     var macroTimerFunc;
 
     // 高版本 IE 和 Edge 才支持的特性
