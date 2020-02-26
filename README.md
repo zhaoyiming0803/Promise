@@ -126,6 +126,7 @@ Promise.prototype.then = function (fulfilled, rejected) {
     }
   })
 };
+```
 
 ### 5、总结
 
