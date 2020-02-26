@@ -7,7 +7,7 @@
   <title>Promise异步race的应用demo</title>
 </head>
 <body>
-  <script src="../src/promise.js"></script>
+  <script src="../src/Promise.js"></script>
   <script>
     var p1 = new Promise(function (resolve, reject) {
       setTimeout(function () {
@@ -23,9 +23,9 @@
     });
 
     Promise.race([p1, p2]).then(function (res) {
-      console.log(res);
+      console.log('then: ', res);
     }, function (res) {
-      console.log(res);
+      console.log('catch: ', res);
     });
   </script>
 </body>

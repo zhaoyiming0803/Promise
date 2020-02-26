@@ -7,20 +7,21 @@
   <title>Document</title>
 </head>
 <body>
-  <script src="../src/promise.js"></script>
+  <script src="../src/Promise.js"></script>
   <script>
     ;(function () {
       var p = new Promise(function (resolve, reject) {
         setTimeout(function () {
-          reject(1);
-        }, 2000);
+          reject(1)
+        });
       });
 
       p.then(value => {
-        console.log('value: ', value);
-      }, reason => {
-        console.log('reason: ', reason);
-      });
+        console.log('value1: ', value)
+        return 111
+      }).catch(value => {
+        console.log('catch: ', value)
+      })
 
       console.log(2);
     })();  

@@ -2,6 +2,7 @@
  * 模拟 ES6-Promise 实现原理，可运行于浏览器或服务端
  * @author: zhaoyiming
  * @since:  2018/02/25
+ * @update: 2020/02/26
  * License: MIT, https://github.com/zymfe/Promise
  */
 
@@ -12,17 +13,10 @@
 })(this, function () {
   'use strict';
 
-  function isArray(arry) {
-    return Object.prototype.toString.call(arry) === '[object Array]';
-  }
+  const isArray = arr => Object.prototype.toString.call(arry) === '[object Array]'
+  const isNative = Cotr => typeof Ctor === 'function' && /native code/.test(Ctor.toString())
+  const isFunction = fn => typeof fn === 'function'
 
-  function isNative(Ctor) {
-    return typeof Ctor === 'function' && /native code/.test(Ctor.toString());
-  }
-
-  // 既然使用 Promise，那么肯定要解决异步问题
-  // 所以在实例化 Promise 时，方法体内最好是异步代码
-  // 否则 setImmediate 和 MessageChannel 会有问题
   var timer = (function () {
     var macroTimerFunc;
 
@@ -56,125 +50,141 @@
     return macroTimerFunc;
   })();
 
-  function resolve(self, value) {
-    var resolves = self.handles.resolves,
-      len = resolves.length;
-
-    if (len === 0) return false;
-
-    self.handles.rejects.length = 0;
-    self.status === 0 && (self.status = 1) && (self.value = value);
-
-    for (var i = 0; i < len; i += 1) {
-      resolves[i].call(self, value);
+  function runResolves (self, value) {
+    let cb = null
+    while (cb = self._resolves.shift()) {
+      cb(value)
     }
   }
 
-  function reject(self, reason) {
-    var rejects = self.handles.rejects,
-      len = rejects.length;
-
-    if (len === 0) return false;
-
-    self.handles.resolves.length = 0;
-    self.status === 0 && (self.status = 2) && (self.value = reason);
-
-    for (var i = 0; i < len; i += 1) {
-      rejects[i].call(self, reason);
+  function runRejects (self, value) {
+    let cb = null
+    while (cb = self._rejects.shift()) {
+      cb(value)
     }
   }
 
-  function doResolve(self, fn) {
-    timer(function () {
-      fn(function (value) {
-        resolve(self, value);
-      }, function (reason) {
-        reject(self, reason);
-      });
-    });
+  function Promise (fn) {
+    this._resolves = []
+    this._rejects = []
+    this._status = 0 // 0: pending 1: resolve 2: reject
+    this._value = null
+
+    timer(() => {
+      try {
+        fn(this._resolve.bind(this), this._reject.bind(this))
+      } catch (e) {
+        this._reject(e)
+      }
+    })
   }
 
-  function multiplePromise(promiseList, resolve, reject) {
-    var successRes = [],
-      errorRes = [],
-      len = promiseList.length;
+  Promise.prototype._resolve = function (value) {
+    if (this._status !== 0) {
+      return
+    }
+    this._value = value
+    this._status = 1
+    runResolves(this, value)
+  }
 
-    if (len === 0) return false;
+  Promise.prototype._reject = function (error) {
+    if (this._status !== 0) {
+      return
+    }
+    this._value = error
+    this._status = 2
+    runRejects(this, error)
+  }
 
-    for (var i = 0; i < len; i += 1) {
-      promiseList[i].then((function (i) {
-        return function (val) {
-          successRes[i] = val;
-          if (--len === 0) {
-            resolve(successRes);
+  Promise.prototype.then = function (onFulfilled, onRejected) {
+    return new Promise((onFulfilledNext, onRejectedNext) => {
+      const fulfilled = value => {
+        try {
+          if (isFunction(onFulfilled)) {
+            const res = onFulfilled(value)
+            if (res instanceof Promise) {
+              res.then(onFulfilledNext, onRejectedNext)
+            } else {
+              onFulfilledNext(res)
+            }
+          } else {
+            onFulfilledNext(value)
           }
+        } catch (e) {
+          onRejectedNext(e)
         }
-      })(i), function (val) {
-        if (errorRes.length === 0) {
-          errorRes.push(val);
-          reject(val);
+      }
+  
+      const rejected = error => {
+        try {
+          if (isFunction(onRejected)) {
+            const res = onRejected(error)
+            if (res instanceof Promise) {
+              res.then(onFulfilledNext, onRejectedNext)
+            } else {
+              onRejectedNext(error)
+            }
+          } else {
+            onRejectedNext(error)
+          }
+        } catch (e) {
+          onRejectedNext(e)
         }
-      });
-    }
+      }
+
+      switch (this._status) {
+        case 0:
+          this._resolves.push(fulfilled)
+          this._rejects.push(rejected)
+          break
+        case 1:
+          fulfilled(this._value)
+          break
+        case 2:
+          rejected(this._value)
+          break
+      }
+    })
   }
 
-  function racePromise(promiseList, resolve, reject) {
-    var status = 0;
-    for (var i = 0, len = promiseList.length; i < len; i += 1) {
-      promiseList[i].then(function (val) {
-        status === 0 && (status = 1) && resolve(val);
-      }, function (val) {
-        status === 0 && (status = 2) && reject(val);
-      });
-    }
+  Promise.prototype.catch = function (onRejected) {
+    return this.then(undefined, onRejected)
   }
 
-  function Promise(fn) {
-    this.handles = {
-      resolves: [],
-      rejects: []
-    };
-    this.status = 0; // 0: pending 1: resolve 2: reject
-    this.value = null;
-    doResolve(this, fn);
+  Promise.prototype.finally = function (cb) {
+    this.then(value => cb(value), error => cb(error))
   }
 
-  Promise.all = function (promiseList) {
-    if (!isArray(promiseList)) {
-      throw Error('The param of Promise.all must be an Array!');
-    }
-    return new Promise(function (resolve, reject) {
-      multiplePromise(promiseList, resolve, reject);
-    });
-  };
-
-  Promise.race = function (promiseList) {
-    if (!isArray(promiseList)) {
-      throw Error('The param of Promise.race must be an Array!');
-    }
-    return new Promise(function (resolve, reject) {
-      racePromise(promiseList, resolve, reject);
-    });
-  };
-
-  Promise.prototype.then = function (resolve, reject) {
-    switch (this.status) {
-      case 0:
-        addQueue(this, resolve, reject);
-        break;
-      case 1:
-        resolve(this.value);
-        break;
-      default:
-        reject(this.value);
-    }
-    return this;
-  };
-
-  function addQueue(self, resolve, reject) {
-    typeof resolve === 'function' && self.handles.resolves.push(resolve);
-    typeof reject === 'function' && self.handles.rejects.push(reject);
+  Promise.resolve = function (value) {
+    if (value instanceof Promise) return value
+    return new Promise(resolve => resolve(value))
   }
 
-  return Promise;
+  Promise.all = function (promises) {
+    return new Promise((resolve, reject) => {
+      const values = []
+      // 可以用 let，省去闭包
+      for (var i = 0; i < promises.length; i++) {
+        ;(function (i) {
+          promises[i].then(value => {
+            values[i] = value
+            if (values.length === promises.length) {
+              resolve(values)
+            }
+          }, error => reject(error))
+        })(i)
+      }
+    })
+  }
+
+  Promise.race = function (promises) {
+    return new Promise((resolve, reject) => {
+      promises.forEach(p => {
+        p.then(value => resolve(value), error => reject(error))
+      })
+    })
+  }
+
+  return Promise
 });

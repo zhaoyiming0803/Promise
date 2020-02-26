@@ -37,14 +37,14 @@ p.then(function (value) {
 ### 2、试着实现一个Promise雏形
 ``` javascript
 function Promise (fn) {
-  this.handles = {
-    resolves: [],
-    rejects: []
-  };
+  this._resolves = []
+  this._rejects = []
 }
 
-Promise.prototype.then = function (resolve, reject) {
-  return this;
+Promise.prototype.then = function (onFulfilled, onRejected) {
+  return new Promise((onFulfilledNext, onRejectedNext) => {
+
+  });
 };
 ```
 通过then方法，将执行成功或失败之后的回调函数放入队列里边（Promise内部定义的handles对象，resolves存放成功时的回调，rejects存放失败时的回调）。
@@ -53,7 +53,7 @@ Promise.prototype.then = function (resolve, reject) {
 
 所以，resolve和reject的执行必须是包含在一个异步方法内（ajax，setTimeout等等），这个时候，会首先执行then，最后异步执行完成之后再依次执行通过then注册的回调。
 
-then中return this，实现了链式调用。
+then中return Promise 实例，实现了链式调用。
 
 ### 3、Promise内部加入延时机制
 
@@ -75,10 +75,8 @@ p.then(function (res) {
 我们可以做一些处理，保证在resolve执行之前，then方法已经注册完所有的回调：在Promise内部，将resolve或reject包裹在setTimeout内：
 ``` javascript
 function Promise (fn) {
-  this.handles = {
-    resolves: [],
-    rejects: []
-  };
+  this._resolves = []
+  this._rejects = []
 
   var _this = this;
 
@@ -106,32 +104,29 @@ Promises/A+规范中的2.1 Promise States中明确规定了，pending可以转�
 ![image](https://github.com/zymfe/Promise/blob/master/promise.png)
 ``` javascript
 function Promise (fn) {
-  this.handles = {
-    resolves: [],
-    rejects: []
-  };
-  this.status = 0; // 0: pending 1: resolve 2: reject
+  this._resolves = []
+  this._rejects = []
+  this._status = 0; // 0: pending 1: resolve 2: reject
 }
 
-Promise.prototype.then = function (resolve, reject) {
-  switch (this.status) {
-    case 0: // 如果是pedding状态，则将回调加入到队列
-      addQueue(this, resolve, reject);
-      break;
-    case 1: // 如果异步已经执行成功，则立刻执行then中注册的resolve方法
-      resolve(this.value);
-      break;
-    default: // 如果异步已经执行失败，则立刻执行then中注册的reject方法
-      reject(this.value);
-  }
-  return this;
+Promise.prototype.then = function (fulfilled, rejected) {
+  return new Promise((onFulfilledNext, onRejectedNext) => {
+    // ...
+    switch (this._status) {
+      case 0: // 如果是pedding状态，则将回调加入到队列
+        this._resolves.push(fulfilled)
+        this._rejects.push(rejected)
+        break
+      case 1: // 如果异步已经执行成功，则立刻执行then中注册的resolve方法
+        fulfilled(this._value)
+        break
+      case 2: // 如果异步已经执行失败，则立刻执行then中注册的reject方法
+        rejected(this._value)
+        break
+    }
+  })
 };
 
-function addQueue (self, resolve, reject) {
-  typeof resolve === 'function' && self.handles.resolves.push(resolve);
-  typeof reject === 'function' && self.handles.rejects.push(reject);
-}
-```
 ### 5、总结
 
 通过Promise.prototype.then方法将观察者方法注册到被观察者Promise对象中，同时返回一个新的Promise对象，以便可以链式调用。
@@ -140,7 +135,7 @@ function addQueue (self, resolve, reject) {
 
 了解了Promise执行原理，再去扩展then之后的其他方法就很好做了。例如Promise.all() Promise.rece()等等。
 
-这里 https://github.com/zymfe/Promise/blob/master/src/promise.js 实现了Promise大多数方法，可以作为参考。
+这里 https://github.com/zymfe/Promise/blob/master/src/Promise.js 实现了Promise，可以作为参考。
 
 ### 个人微信&QQ：1047832475
 

@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Promise异步catch的应用demo</title>
+</head>
+<body>
+  <script src="../src/Promise.js"></script>
+  <script>
+    var p = new Promise(function (resolve, reject) {
+      setTimeout(() => {
+        reject(1);
+      });
+    });
+    
+    p.catch(error => {
+      console.log('error: ', error)
+    })
+  </script>
+</body>
+</html>

@@ -8,7 +8,7 @@
 </head>
 <body>
   <script src="https://cdn.bootcss.com/jquery/3.4.1/jquery.js"></script>
-  <script src="../src/promise.js"></script>
+  <script src="../src/Promise.js"></script>
   <script>
     var p1 = new Promise(function (resolve, reject) {
       setTimeout(function () {
@@ -18,7 +18,7 @@
 
     var p2 = new Promise(function (resolve, reject) {
       setTimeout(function () {
-        resolve(2);
+        reject(2);
       }, 2000);
     });
 
@@ -37,9 +37,9 @@
     // });
 
     Promise.all([p1, p2]).then(function (res) {
-      console.log(res);
+      console.log('then: ', res);
     }, function (res) {
-      console.log(res);
+      console.log('catch: ', res);
     });
   </script>
 </body>
