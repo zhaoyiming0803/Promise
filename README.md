@@ -101,7 +101,7 @@ function Promise (fn) {
 
 Promises/A+规范中的2.1 Promise States中明确规定了，pending可以转化为fulfilled或rejected并且只能转化一次，也就是说如果pending转化到fulfilled状态，那么就不能再转化到rejected。并且fulfilled和rejected状态只能由pending转化而来，两者之间不能互相转换。如图所示：
 
-![image](https://github.com/zymfe/Promise/blob/master/promise.png)
+![image](https://github.com/zymfe/Promise/blob/dev/promise.png)
 ``` javascript
 function Promise (fn) {
   this._resolves = []
@@ -140,7 +140,7 @@ Promise.prototype.then = function (fulfilled, rejected) {
 
 ### 个人微信&QQ：1047832475
 
-![image](https://github.com/zymfe/VueNode/blob/master/wechat.png)
+![image](https://github.com/zymfe/VueNode/blob/dev/wechat.png)
 
 ### --- 分割线 ---
 
