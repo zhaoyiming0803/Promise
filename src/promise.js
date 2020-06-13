@@ -3,7 +3,7 @@
  * @author: zhaoyiming
  * @since:  2018/02/25
  * @update: 2020/02/26
- * License: MIT, https://github.com/zymfe/Promise
+ * License: MIT, https://github.com/zhaoyiming0803/Promise
  */
 
 ; (function (window, factory) {
