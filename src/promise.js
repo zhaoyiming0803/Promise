@@ -1,9 +1,5 @@
 /**
- * 模拟 ES6-Promise 实现原理，可运行于浏览器或服务端
- * @author: zhaoyiming
- * @since:  2018/02/25
- * @update: 2020/02/26
- * License: MIT, https://github.com/zhaoyiming0803/Promise
+ * 模拟 ES6-Promise
  */
 
 ; (function (window, factory) {
