@@ -4,6 +4,17 @@
 
 注意：熟悉Promise基本用法之后再阅读此文会更好，可参考中文版《Promises/A+规范》：http://www.ituring.com.cn/article/66566 。
 
+### 个人理解：
+
+Promise 本身没有解决「异步回调地狱」的问题，async await 才解决了。
+
+Promise 真正解决的是「信任问题」，把回调函数的执行权放到开发者手中，
+
+比如 [demo](https://github.com/zhaoyiming0803/test-code/blob/master/test288.js) 所示：
+
+就算第三方库 ajax 执行多次（resolve 或 reject），注册的 then 回调也只会执行一次。
+
+Promise 本身不会回调过晚，只要决议了，它就会按照规定运行。至于服务器或者网络的问题，并不是 Promise 能解决的，一般这种情况会使用 Promise 的竞态 catch。
 ### 1、简易实例
 ``` javascript
 var p = new Promise(function (resolve, reject) {
