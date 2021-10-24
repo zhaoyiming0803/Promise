@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <script src="../src/promise.js"></script>
+</head>
+
+<body>
+  <script>
+    // 待修正
+    ; (function (window, Promise) {
+
+      console.log('script start')
+
+      new Promise((resolve, reject) => {
+        setTimeout(() => {
+          console.log('promise1')
+          resolve()
+        })
+      })
+        .then(() => {
+          console.log('then1 - 1')
+          new Promise((resolve, reject) => {
+            console.log('promise2')
+            resolve()
+          })
+            .then(() => {
+              console.log('then2 - 1')
+            })
+            .then(() => {
+              console.log('then2 - 2')
+            })
+            .then(() => {
+              console.log('then2 - 3')
+            })
+          return 'then1 then1 then1'
+        })
+        .then((res) => {
+          console.log('then1 - 2', res)
+        })
+
+      console.log('script end')
+
+    })(window, Promise);
+  </script>
+</body>
+
+</html>
