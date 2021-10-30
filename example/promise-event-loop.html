@@ -11,8 +11,12 @@
 
 <body>
   <script>
-    // 待修正
     ; (function (window, Promise) {
+
+      // 以下 demo 跟真实的 promise 结果稍有差异
+      // 原因是 mock 的 promise 的 then 方法是一个异步，将回调加入到 microtask 这个操作使用了 MessageChannel 或 setTimeout 等操作
+      // 所以把回调加入 microtask 的顺序是：1-1 1-2 2-1 2-2 2-3
+      // 但是的原生的 promise 将回调加入加入 microtask 的顺序是 1-1 2-1 1-2 2-2 2-3
 
       console.log('script start')
 
@@ -26,7 +30,7 @@
           console.log('then1 - 1')
           new Promise((resolve, reject) => {
             console.log('promise2')
-            resolve()
+            resolve(0)
           })
             .then(() => {
               console.log('then2 - 1')

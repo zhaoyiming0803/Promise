@@ -46,33 +46,31 @@
     return macroTimerFunc;
   })();
 
-  function runResolves (self, value) {
+  function runResolves(self, value) {
     let cb = null
     while (cb = self._resolves.shift()) {
       cb(value)
     }
   }
 
-  function runRejects (self, value) {
+  function runRejects(self, value) {
     let cb = null
     while (cb = self._rejects.shift()) {
       cb(value)
     }
   }
 
-  function Promise (fn) {
+  function Promise(fn) {
     this._resolves = []
     this._rejects = []
     this._status = 0 // 0: pending 1: resolve 2: reject
     this._value = null
 
-    timer(() => {
-      try {
-        fn(this._resolve.bind(this), this._reject.bind(this))
-      } catch (e) {
-        this._reject(e)
-      }
-    })
+    try {
+      fn(this._resolve.bind(this), this._reject.bind(this))
+    } catch (e) {
+      this._reject(e)
+    }
   }
 
   Promise.prototype._resolve = function (value) {
@@ -95,52 +93,54 @@
 
   Promise.prototype.then = function (onFulfilled, onRejected) {
     return new Promise((onFulfilledNext, onRejectedNext) => {
-      const fulfilled = value => {
-        try {
-          if (isFunction(onFulfilled)) {
-            const res = onFulfilled(value)
-            if (res instanceof Promise) {
-              res.then(onFulfilledNext, onRejectedNext)
+      timer(() => {
+        const fulfilled = value => {
+          try {
+            if (isFunction(onFulfilled)) {
+              const res = onFulfilled(value)
+              if (res instanceof Promise) {
+                res.then(onFulfilledNext, onRejectedNext)
+              } else {
+                onFulfilledNext(res)
+              }
             } else {
-              onFulfilledNext(res)
+              onFulfilledNext(value)
             }
-          } else {
-            onFulfilledNext(value)
+          } catch (e) {
+            onRejectedNext(e)
           }
-        } catch (e) {
-          onRejectedNext(e)
         }
-      }
-  
-      const rejected = error => {
-        try {
-          if (isFunction(onRejected)) {
-            const res = onRejected(error)
-            if (res instanceof Promise) {
-              res.then(onFulfilledNext, onRejectedNext)
+
+        const rejected = error => {
+          try {
+            if (isFunction(onRejected)) {
+              const res = onRejected(error)
+              if (res instanceof Promise) {
+                res.then(onFulfilledNext, onRejectedNext)
+              } else {
+                onRejectedNext(error)
+              }
             } else {
               onRejectedNext(error)
             }
-          } else {
-            onRejectedNext(error)
+          } catch (e) {
+            onRejectedNext(e)
           }
-        } catch (e) {
-          onRejectedNext(e)
         }
-      }
 
-      switch (this._status) {
-        case 0:
-          this._resolves.push(fulfilled)
-          this._rejects.push(rejected)
-          break
-        case 1:
-          fulfilled(this._value)
-          break
-        case 2:
-          rejected(this._value)
-          break
-      }
+        switch (this._status) {
+          case 0:
+            this._resolves.push(fulfilled)
+            this._rejects.push(rejected)
+            break
+          case 1:
+            fulfilled(this._value)
+            break
+          case 2:
+            rejected(this._value)
+            break
+        }
+      })
     })
   }
 
@@ -162,7 +162,7 @@
       const values = []
       // 可以用 let，省去闭包
       for (var i = 0; i < promises.length; i++) {
-        ;(function (i) {
+        ; (function (i) {
           promises[i].then(value => {
             values[i] = value
             if (values.length === promises.length) {
