@@ -20,7 +20,7 @@ Promise 本身不会回调过晚，只要决议了，它就会按照规定运行
 var p = new Promise(function (resolve, reject) {
   $.ajax({
     type: 'POST',
-    url: 'http://www.zymseo.com/qianduan',
+    url: 'https://example.com',
     data: {
       uname: 'zhaoyiming',
       upwd: '123456'
