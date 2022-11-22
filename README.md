@@ -151,7 +151,7 @@ Promise.prototype.then = function (fulfilled, rejected) {
 
 ### 个人微信&QQ：1047832475
 
-![image](https://github.com/zhaoyiming0803/zhaoyiming0803/raw/master/wechat.jpg)
+<img src="https://github.com/zhaoyiming0803/zhaoyiming0803/raw/master/wechat.jpeg" width="250" height="250" />
 
 ### --- 分割线 ---
 
