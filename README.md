@@ -1,7 +1,5 @@
 # Promise
 
-根据官方 Promise 用法，结合个人思路，试着实现 Promise，通过每次 git 提交，记录自己的思路，持续修改更新中！
-
 注意：熟悉 Promise 基本用法之后再阅读此文会更好，可参考中文版《Promises/A+规范》：http://www.ituring.com.cn/article/66566 。
 
 ### 个人理解：
