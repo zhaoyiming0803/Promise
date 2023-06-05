@@ -9,8 +9,7 @@
 })(this, function () {
   'use strict';
 
-  const isArray = arr => Object.prototype.toString.call(arry) === '[object Array]'
-  const isNative = Cotr => typeof Ctor === 'function' && /native code/.test(Ctor.toString())
+  const isNative = Ctor => typeof Ctor === 'function' && /native code/.test(Ctor.toString())
   const isFunction = fn => typeof fn === 'function'
 
   const timer = (function () {
